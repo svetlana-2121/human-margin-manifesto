@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Margin Academy | Manifesto</title>
+
+    <!-- Google Fonts: Playfair Display (Serif/Narrative) & Inter (Sans/Technical) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        industrial: '#111827',
+                        digital: '#0f172a',
+                        human: '#d4a373',
+                        humanLight: '#faedcd',
+                        horizon: '#e0f2fe',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS for Scrollytelling specific needs -->
+    <style>
+        body {
+            background-color: #111827; /* Start dark */
+            color: #f3f4f6;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Cinematic Grain Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+
+        .reveal-text {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .horizontal-scroll-container {
+            width: 300vw; /* 3 screens wide */
+            height: 100vh;
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+        .panel {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* Smooth color transitions handled by GSAP */
+        .theme-dark { color: #f3f4f6; }
+        .theme-light { color: #1f2937; }
+
+        /* --- NEW: Glitch Micro-Interaction Styles --- */
+        .feed-card {
+            cursor: crosshair;
+        }
+        .feed-card img {
+            transition: filter 0.2s, transform 0.3s;
+        }
+        .feed-card:hover img {
+            filter: contrast(150%) saturate(0) invert(1);
+            transform: scale(1.05);
+        }
+        .glitch-layer {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 20, 0, 0.85);
+            color: #00ff41; /* Hacker terminal green */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .feed-card:hover .glitch-layer {
+            opacity: 1;
+        }
+        .glitch-text {
+            animation: glitchAnim 0.2s infinite;
+        }
+        @keyframes glitchAnim {
+            0% { transform: translate(0); opacity: 1; }
+            20% { transform: translate(-2px, 1px); opacity: 0.8; }
+            40% { transform: translate(-1px, -1px); opacity: 1; }
+            60% { transform: translate(2px, 1px); opacity: 0.9; }
+            80% { transform: translate(1px, -1px); opacity: 1; }
+            100% { transform: translate(0); opacity: 0.8; }
+        }
+
+        /* --- Typewriter Cursor --- */
+        .typewriter-cursor {
+            display: inline;
+            animation: blink 0.7s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* --- NEW: SVG Path Drawing Base Styles --- */
+        .svg-hand-drawn {
+            stroke-dasharray: 1000; /* Will be recalculated in JS */
+            stroke-dashoffset: 1000;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-human selection:text-white">
+
+    <div class="noise-overlay"></div>
+
+    <!-- Navigation Overlay (Hidden by default) -->
+    <div id="nav-overlay" class="fixed inset-0 bg-industrial z-40 flex flex-col justify-center items-center translate-x-full transition-transform duration-500 ease-in-out">
+        <ul class="text-4xl md:text-6xl font-serif space-y-8 text-center text-white/80">
+            <li><a href="#" class="hover:text-white transition-colors nav-link">01. The Manifesto</a></li>
+            <li><a href="#" class="hover:text-white transition-colors nav-link">02. The Algorithm</a></li>
+            <li><a href="#" class="hover:text-white transition-colors nav-link">03. The Human Margin</a></li>
+            <li><a href="#" class="hover:text-white transition-colors nav-link">04. Admissions</a></li>
+        </ul>
+    </div>
+
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center mix-blend-difference text-white">
+        <div class="font-sans font-semibold tracking-widest text-xs uppercase">Human Margin Academy</div>
+        <button id="menu-btn" class="focus:outline-none z-50 relative w-8 h-8 flex flex-col justify-center items-end gap-1.5 group">
+            <span class="block w-6 h-0.5 bg-white transition-transform origin-right group-hover:w-8"></span>
+            <span class="block w-8 h-0.5 bg-white transition-all origin-right"></span>
+        </button>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="fixed top-0 left-0 h-1 bg-white z-50 origin-left scale-x-0" id="progress-bar"></div>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <!-- HERO + CLOUDS PINNED SEQUENCE -->
+            <section id="hero-clouds-section" class="relative h-[250vh]" data-theme="dark">
+                <div class="sticky top-0 h-screen w-full overflow-hidden">
+                    <!-- Hero (static background) -->
+                    <div class="absolute inset-0 z-0">
+                        <img src="hero-sky.png" alt="" class="w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#111827] via-[#111827]/40 to-transparent"></div>
+                    </div>
+                    <!-- Hero text -->
+                    <div class="absolute inset-0 z-10 flex items-center justify-center text-center px-8 md:px-20">
+                        <div class="max-w-4xl">
+                            <p id="hero-typewriter" class="font-serif text-3xl md:text-5xl text-white leading-tight"></p>
+                        </div>
+                    </div>
+                    <!-- Clouds layer — starts below viewport, rises up, then scales -->
+                    <div id="clouds-img" class="absolute left-0 w-full z-20" style="top: 100%; transform-origin: right bottom;">
+                        <img src="clouds.png" alt="" class="w-full object-cover" />
+                    </div>
+                </div>
+            </section>
+
+        <!-- SECTION 1: The Breaking Contract -->
+        <section class="px-6 md:px-20 max-w-4xl mx-auto" data-theme="dark">
+
+            <div class="min-h-screen flex flex-col justify-center reveal-text">
+                <p class="text-xl md:text-2xl font-serif leading-relaxed text-gray-400">
+                    You showed up. You did the work. You learned what needed to be learned, built what needed to be built, stayed later than you needed to stay, took the calls nobody else wanted to take. You trusted that the system you operated inside, the company, the platform, the industry, the career track, would hold its end of the bargain. It had always held before. There was no reason to think it wouldn't hold for you.
+                </p>
+            </div>
+
+            <div class="min-h-screen flex flex-col justify-center reveal-text">
+                <p class="text-3xl md:text-5xl font-serif leading-tight border-l-4 border-white/20 pl-8">
+                    And then something shifted. <br>
+                    <span class="italic text-gray-500">Quietly at first. Then all at once.</span>
+                </p>
+            </div>
+
+            <div class="min-h-screen flex flex-col justify-center reveal-text">
+                <p class="text-lg font-sans font-light leading-relaxed text-gray-300">
+                    This is not a story about technology. It is a story about who holds the power, and who has been quietly, consistently told to be grateful for access to it. It is a story about two promises that were made to most of us before we were old enough to question them, and what happens when both of them break at the same time.
+                </p>
+            </div>
+
+            <!-- The Promises -->
+            <div class="min-h-screen flex flex-col justify-center reveal-text space-y-6">
+                <h2 class="text-xs uppercase tracking-widest text-gray-500 font-sans font-bold">The First Promise</h2>
+                <p class="font-serif text-xl md:text-3xl leading-relaxed">
+                    Bring your labor, your loyalty, your years. Operate inside the system. Follow the rules. And in return, you will have stability, identity, and the comfort of knowing your place in the world was secured by something larger than yourself.
+                </p>
+                <p class="font-sans text-sm md:text-lg text-gray-400">
+                    Then the conditions changed. Globalization changed them. Private equity changed them. Technology changed them. The promise started fraying in ways that were easy to dismiss at first.
+                </p>
+            </div>
+
+            <div id="scroll-break-section" class="min-h-screen flex flex-col justify-center space-y-6" style="opacity: 0;">
+                <h2 class="text-xs uppercase tracking-widest text-gray-500 font-sans font-bold">The Second Promise</h2>
+                <p class="font-serif text-xl md:text-3xl leading-relaxed">
+                    Get the degree. It doesn't matter what it costs. Borrow what you need to borrow. The credential will pay for itself. A bachelor's degree, a master's, a professional certification. These were the entry tickets.
+                </p>
+                <p class="font-sans text-sm md:text-lg text-gray-400">
+                    Millions believed this. Millions made enormous financial sacrifices. Many are still waiting for the return. The degree got them a job. The job got restructured. The credential became a line on a resume that an algorithm sorted before a human ever read it.
+                </p>
+                <!-- Breaking scroll object -->
+                <div class="flex justify-center pt-8">
+                    <div id="scroll-object" class="relative w-32 md:w-40 h-24 md:h-28">
+                        <img id="object-left" src="object-left.png" alt="" class="absolute right-1/2 top-0 h-full w-auto object-contain" style="transform-origin: center right;" />
+                        <img id="object-right" src="object-right.png" alt="" class="absolute left-1/2 top-0 h-full w-auto object-contain" style="transform-origin: center left;" />
+                    </div>
+                </div>
+            </div>
+
+            <div id="no-longer-exist-block" class="min-h-screen flex flex-col justify-center text-center" style="opacity: 0;">
+                <p class="text-3xl md:text-5xl font-serif leading-relaxed">
+                    The promise was not a lie exactly. <br>
+                    It was designed for conditions that
+                    <span class="relative inline-block font-bold">
+                        no longer exist.
+                        <svg class="absolute w-full h-4 -bottom-2 left-0 text-red-500 pointer-events-none" viewBox="0 0 100 10" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                            <path id="red-underline" class="svg-hand-drawn" d="M2,5 L98,5"/>
+                        </svg>
+                    </span>
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION 2: The Algorithm (Pinned Horizontal Scroll) -->
+            <!-- We change background to Digital/Algorithmic -->
+            <div id="trigger-digital" class="w-full"></div>
+            <section id="algorithm-section" class="overflow-hidden bg-digital relative border-t border-b border-white/10" data-theme="dark">
+
+                <!-- Wide Parallax Background Image -->
+                <div id="algo-bg" class="absolute top-0 left-0 h-full w-[150vw] z-0 opacity-20" style="background-image: url('grok-image-b1df1892-19cb-4dc3-955d-57091cd16e77 3.png'); background-size: cover; background-position: center;"></div>
+
+                <div class="absolute top-10 left-10 z-40 text-white/50 font-sans text-xs tracking-widest uppercase">The Narrowing</div>
+
+                <div class="horizontal-scroll-container relative z-10">
+
+                    <!-- Panel 1 -->
+                    <div class="panel">
+                        <div class="max-w-2xl text-center bg-[#0f172a]/40 p-8 backdrop-blur-sm rounded-xl border border-white/10">
+                            <h2 class="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg">The Algorithm Was Already Here</h2>
+                            <p class="font-sans font-light text-xl text-gray-300">
+                                Before AI entered the workplace, before the reorganizations began, the algorithm was already reshaping you. Not dramatically. Not in ways that announced themselves. In the accumulated texture of daily experience, invisible because it was everywhere.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Panel 2 -->
+                    <div class="panel relative">
+                        <!-- Floating representations of curated feeds WITH GLITCH EFFECTS -->
+                        <div class="absolute inset-0 flex items-center justify-center gap-4 md:gap-8 overflow-hidden opacity-60 z-0">
+                            <!-- Card 1 -->
+                            <div class="feed-card relative w-40 md:w-56 h-64 md:h-80 bg-white/5 rounded-xl border border-white/20 overflow-hidden transform -translate-y-16 shadow-2xl">
+                                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-overlay"/>
+                                <div class="glitch-layer">
+                                    <div class="glitch-text space-y-2">
+                                        <p>[SYS.ENGAGEMENT_OPTIMIZED]</p>
+                                        <p>usr.attention = true</p>
+                                        <p>01001000 01101001</p>
+                                        <p class="text-red-500 font-bold">WARNING: ECHO_CHAMBER_LOCKED</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="feed-card relative w-48 md:w-64 h-72 md:h-96 bg-white/5 rounded-xl border border-white/20 overflow-hidden transform translate-y-12 shadow-2xl">
+                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-overlay"/>
+                                <div class="glitch-layer">
+                                    <div class="glitch-text space-y-2">
+                                        <p>[DOPAMINE_TRIGGER_ACTIVE]</p>
+                                        <p>model.predict(behavior)</p>
+                                        <p>retention_probability: 98.4%</p>
+                                        <p>inject_friction: FALSE</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 3 -->
+                            <div class="feed-card relative w-56 md:w-72 h-80 md:h-[28rem] bg-white/5 rounded-xl border border-white/30 overflow-hidden z-10 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+                                <img src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-screen opacity-50"/>
+                                <div class="glitch-layer">
+                                    <div class="glitch-text space-y-2 text-sm">
+                                        <p>target.filter_bubble = 1</p>
+                                        <p>diversity_index: &lt; 0.01</p>
+                                        <p>11001001 10101100</p>
+                                        <p class="text-red-500">> AESTHETIC_HOMOGENIZED</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 4 -->
+                            <div class="feed-card relative w-48 md:w-64 h-72 md:h-96 bg-white/5 rounded-xl border border-white/20 overflow-hidden transform -translate-y-8 shadow-2xl">
+                                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-overlay"/>
+                                <div class="glitch-layer">
+                                    <div class="glitch-text space-y-2">
+                                        <p>[SYS.COMMERCIAL_OBJ]</p>
+                                        <p>load_personalized_view</p>
+                                        <p>00110011 00000000</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 5 -->
+                            <div class="feed-card relative w-40 md:w-56 h-64 md:h-80 bg-white/5 rounded-xl border border-white/20 overflow-hidden transform translate-y-16 shadow-2xl">
+                                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover mix-blend-overlay"/>
+                                <div class="glitch-layer">
+                                    <div class="glitch-text space-y-2">
+                                        <p>[CONSUME_LOOP]</p>
+                                        <p>while(true) { scroll() }</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="max-w-2xl text-center z-10 bg-[#0f172a]/60 p-8 backdrop-blur-md rounded-xl border border-white/10 pointer-events-none">
+                            <h2 class="text-3xl md:text-5xl font-serif mb-6 italic drop-shadow-lg">Every search filtered.<br>Every feed curated.</h2>
+                            <p class="font-sans font-light text-xl text-gray-300">
+                                This is what rising mediocrity looks like in practice. Not stupidity. Not laziness. A gradual narrowing of the space of what feels interesting, relevant, and worth engaging with... driven by systems that learned to optimize for what you already respond to rather than what might expand you.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Panel 3 -->
+                    <div class="panel">
+                        <div class="max-w-3xl text-center z-10 bg-[#0f172a]/80 p-8 backdrop-blur-lg rounded-xl border border-red-500/30">
+                            <h2 class="text-4xl md:text-6xl font-serif mb-6 text-red-400 drop-shadow-lg">Now the Algorithm Is at Work</h2>
+                            <p class="font-sans font-light text-xl text-gray-300">
+                                What social media did to our attention, enterprise AI is now doing to our professional selves. And it is doing it faster, at higher stakes. The question is not whether this is happening. It is. The question is what you do with that understanding while you still have time to act on it.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Gold glow overlay — sits on top of everything in the algorithm section -->
+                <div id="gold-glow-img" class="absolute w-full z-50 pointer-events-none" style="top: 100%; right: 0; transform-origin: right bottom;">
+                    <img src="gold-glow.png" alt="" class="w-full object-cover" />
+                </div>
+
+            </section>
+
+            <!-- SECTION 3: The Human Margin (Sticky Focus & Warm Colors) -->
+            <div id="trigger-human" class="w-full"></div>
+            <!-- Background changes to warm/organic via JS when scrolling past trigger-human -->
+            <section class="relative overflow-hidden bg-[#faedcd]" id="human-margin-wrapper" data-theme="light">
+
+                <!-- UPDATED: Abstract Background SVG Drawing - Increased opacity from 0.03 to 0.15 and thickened the line -->
+                <svg class="absolute inset-0 w-full h-full opacity-[0.15] text-[#2c1e16] pointer-events-none z-0" viewBox="0 0 1000 2000" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="svg-hand-drawn" d="M100,200 Q300,50 600,150 T900,400 T300,800 T700,1200 T200,1600 T800,1900 M200,250 Q400,100 800,300 T500,900 T800,1500 T300,1800 M50,500 Q200,400 400,600 T100,1000 T600,1600 T150,1950 M450,150 Q650,200 850,500 T400,1100 T900,1700 M500,300 Q600,450 700,700 T500,1300 T850,1850"/>
+                </svg>
+
+                <!-- Sticky Centered Text -->
+                <div class="sticky top-0 h-screen w-full flex items-center justify-center p-6 pointer-events-none z-0" id="sticky-quote">
+                    <div class="relative">
+                        <!-- NEW: Hand-drawn arrow pointing to the text -->
+                        <svg class="absolute -left-20 -top-20 w-32 h-32 text-red-600/80 pointer-events-none hidden md:block" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <path class="svg-hand-drawn" d="M10,90 Q30,40 80,80 M60,80 L80,80 L75,60" />
+                        </svg>
+
+                        <h2 class="text-5xl md:text-8xl font-serif font-bold text-center leading-none text-[#2c1e16] mix-blend-multiply opacity-20 transition-opacity duration-500" id="main-quote">
+                            Skills build futures.<br>Credentials do not.
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- Scrolling Text Blocks over the sticky background -->
+                <div class="relative z-10 w-full -mt-[100vh] pt-[100vh] pb-[100vh] flex flex-col items-center gap-[100vh] px-6 text-[#2c1e16]">
+
+                    <div class="max-w-xl bg-[#faedcd]/90 backdrop-blur p-8 md:p-12 shadow-2xl reveal-text relative">
+                        <h3 class="font-sans font-bold text-xs uppercase tracking-widest text-[#2c1e16]/60 mb-4">Two Kinds of Loss</h3>
+                        <p class="font-serif text-xl leading-relaxed">
+                            There are losses that are visible and losses that are not. The visible ones are easier to grieve... The invisible losses are harder. They accumulate slowly in the background of a professional life that, from the outside, looks completely fine.
+                        </p>
+                        <p class="font-sans text-sm mt-4 text-[#2c1e16]/80">
+                            The risk is not just that your job changes. It is that you change inside the job, slowly, in ways you do not notice, in the direction the system has been optimized to push you. This is the loss this school was built to prevent. Not the job loss that comes with a notification. The self loss that comes without one.
+                        </p>
+                    </div>
+
+                    <div class="max-w-xl bg-[#faedcd]/90 backdrop-blur p-8 md:p-12 shadow-2xl reveal-text ml-auto md:mr-20">
+                        <h3 class="font-sans font-bold text-xs uppercase tracking-widest text-[#2c1e16]/60 mb-4">What Cannot Be Taken</h3>
+                        <p class="font-serif text-2xl leading-relaxed">
+                            The Human Margin is the territory of human capability that AI cannot reach.
+                        </p>
+                        <p class="font-serif text-lg mt-4 leading-relaxed">
+                            Not because AI hasn't tried, but because these capabilities emerge from something AI fundamentally does not have: a body, a history, a life lived with specific people in specific places... the moral location in the world that comes from actually having something at stake.
+                        </p>
+                        <p class="font-sans font-semibold mt-6">
+                            Not to the employer. Not to the platform. They are yours.
+                        </p>
+                    </div>
+
+                    <div class="max-w-xl bg-[#faedcd]/90 backdrop-blur p-8 md:p-12 shadow-2xl reveal-text mr-auto md:ml-20">
+                        <h3 class="font-sans font-bold text-xs uppercase tracking-widest text-[#2c1e16]/60 mb-4">The Layer Between</h3>
+                        <p class="font-serif text-xl leading-relaxed">
+                            Between the Human Margin and the AI tools you use every day, there is a practice layer that almost nobody is teaching and almost everyone is getting wrong by default. We call it the
+                            <span class="font-bold relative whitespace-nowrap text-[#2c1e16]">
+                                <!-- UPDATED: Hand-drawn circle - Thicker and more visible -->
+                                <svg class="absolute -inset-y-3 -inset-x-4 w-[calc(100%+32px)] h-[calc(100%+24px)] text-red-600 pointer-events-none" viewBox="0 0 100 40" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                                    <path class="svg-hand-drawn" d="M10,25 Q5,5 50,5 Q95,5 90,25 Q85,40 50,35 Q15,30 15,15 Q20,10 30,10"/>
+                                </svg>
+                                Applied Margin
+                            </span>.
+                            It is the operational skill of bringing your human capabilities into contact with AI, deliberately, with your judgment as the authority, without letting that contact erode the capabilities you brought to it.
+                        </p>
+                        <p class="font-sans text-sm mt-4 text-[#2c1e16]/80">
+                            It includes knowing exactly how much to trust an AI output... and what we call Algorithmic Sovereignty. The capacity to understand the systems that would otherwise understand you.
+                        </p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- SECTION 4: Independence & The Larger Thing (Horizon) -->
+            <div id="trigger-horizon" class="w-full"></div>
+            <section class="relative" id="finish-line" data-theme="light">
+
+                <!-- Background Gradient Horizon -->
+                <div class="absolute inset-0 z-0 h-full" style="background: linear-gradient(to bottom, #faedcd 0%, #e0f2fe 10%, #f8fafc 30%);"></div>
+
+                <div class="min-h-screen flex flex-col justify-center max-w-4xl mx-auto z-10 text-center space-y-12 px-6 pt-32 relative">
+                    <h2 class="text-4xl md:text-6xl font-serif text-slate-800 reveal-text">
+                        What You Will Have When You Finish
+                    </h2>
+
+                    <p class="text-xl md:text-2xl font-sans font-light text-slate-600 leading-relaxed reveal-text">
+                        The goal of this program is not a credential. The credential is a byproduct of something more important: becoming a person who no longer needs the system to feel secure.
+                    </p>
+
+                    <p class="text-lg md:text-xl font-serif text-slate-700 leading-relaxed reveal-text">
+                        Most of all, you will have evidence. Not belief. Evidence, from twelve months of serious practice, that what you have built in yourself transfers. That feeling, the one where you know you can start from scratch and build something greater because you are not dependent on the conditions being right...
+                    </p>
+                </div>
+
+                <!-- 3 Pillars Grid -->
+                <div class="min-h-screen flex flex-col justify-center max-w-6xl mx-auto px-6 relative">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 z-10 reveal-text">
+                        <!-- Pillar 1 -->
+                        <div class="border border-slate-300 p-10 bg-white/50 backdrop-blur hover:bg-white transition-colors group cursor-default">
+                            <h4 class="font-sans font-bold text-lg mb-4 text-slate-800">The Human Margin</h4>
+                            <p class="font-sans text-sm text-slate-600">The human capabilities that AI cannot reach, developed through deliberate practice until they are second nature.</p>
+                        </div>
+                        <!-- Pillar 2 -->
+                        <div class="border border-slate-300 p-10 bg-white/50 backdrop-blur hover:bg-white transition-colors group cursor-default">
+                            <h4 class="font-sans font-bold text-lg mb-4 text-slate-800">The Applied Margin</h4>
+                            <p class="font-sans text-sm text-slate-600">The operational skills of directing AI with your judgment intact and your sovereignty maintained.</p>
+                        </div>
+                        <!-- Pillar 3 -->
+                        <div class="border border-slate-300 p-10 bg-white/50 backdrop-blur hover:bg-white transition-colors group cursor-default">
+                            <h4 class="font-sans font-bold text-lg mb-4 text-slate-800">AI Capabilities</h4>
+                            <p class="font-sans text-sm text-slate-600">What AI can actually do, where it fails, how to use it with precision, and how to watch the frontier move.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="min-h-screen flex flex-col justify-center max-w-4xl mx-auto z-10 text-center px-6 relative">
+                    <h3 class="text-4xl md:text-7xl font-serif font-bold text-slate-900 reveal-text">
+                        That is independence.<br>Not the kind you declare. <br>The kind you earn.
+                    </h3>
+                </div>
+
+                <!-- Final Call to Action -->
+                <div class="min-h-screen flex flex-col justify-center max-w-2xl mx-auto text-center z-10 space-y-8 px-6 relative">
+                    <p class="font-serif text-2xl md:text-4xl text-slate-600 italic reveal-text">
+                        The startup can be deprecated.<br>
+                        The job can be eliminated.<br>
+                        The model can be switched off.<br>
+                        <span class="font-bold text-slate-900 not-italic">Your capabilities cannot.</span>
+                    </p>
+                    <div class="reveal-text">
+                        <p class="font-sans text-sm md:text-base tracking-widest uppercase text-slate-500 font-bold pt-4">That is why we built this.</p>
+                        <a href="#" class="inline-block mt-8 border border-slate-900 px-12 py-5 text-lg font-sans font-semibold text-slate-900 hover:bg-slate-900 hover:text-white transition-all duration-300 tracking-wide hover:scale-105 active:scale-95">
+                            CLAIM YOUR MARGIN
+                        </a>
+                    </div>
+                </div>
+
+                <footer class="w-full text-center z-10 py-10 relative">
+                    <p class="font-sans text-xs text-slate-400">Human Margin Academy &copy; humanmargin.academy</p>
+                </footer>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- GSAP Scripts for Scrollytelling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // Register GSAP Plugin
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Menu Toggle Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const navOverlay = document.getElementById('nav-overlay');
+        const navLinks = document.querySelectorAll('.nav-link');
+        let menuOpen = false;
+
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                navOverlay.classList.remove('translate-x-full');
+                menuBtn.querySelector('span:first-child').style.transform = 'rotate(45deg) translate(4px, 4px)';
+                menuBtn.querySelector('span:last-child').style.transform = 'rotate(-45deg) translate(4px, -4px)';
+            } else {
+                navOverlay.classList.add('translate-x-full');
+                menuBtn.querySelector('span:first-child').style.transform = 'none';
+                menuBtn.querySelector('span:last-child').style.transform = 'none';
+            }
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        navLinks.forEach(link => link.addEventListener('click', toggleMenu));
+
+        // Progress Bar
+        gsap.to("#progress-bar", {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+                trigger: document.body,
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.3
+            }
+        });
+
+        // 0. Clouds: rise up to bottom of hero, then scale to fill screen
+        const cloudsTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#hero-clouds-section",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1,
+            }
+        });
+        // Phase 1 (0-40%): Clouds rise from below viewport to bottom edge of screen
+        cloudsTL.to("#clouds-img", {
+            top: "60%",
+            ease: "none",
+            duration: 0.4,
+        });
+        // Phase 2 (40-100%): Clouds scale up from right corner, staying anchored at bottom
+        cloudsTL.to("#clouds-img", {
+            scale: 5,
+            ease: "power1.in",
+            duration: 0.6,
+        });
+
+        // 1. Reveal Text Animation (Standard fade up)
+        const revealElements = document.querySelectorAll(".reveal-text");
+        revealElements.forEach((el) => {
+            gsap.to(el, {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 85%", // Triggers when the top of element hits 85% down viewport
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+
+        // 2. The Algorithm: Horizontal Scroll Tunnel
+        const horizSection = document.getElementById('algorithm-section');
+        const horizContainer = document.querySelector('.horizontal-scroll-container');
+
+        // Define a longer scroll distance to slow down the horizontal movement
+        const algoScrollDist = () => "+=" + (horizContainer.scrollWidth * 2);
+
+        let horizScrollTween = gsap.to(horizContainer, {
+            x: () => -(horizContainer.scrollWidth - window.innerWidth),
+            ease: "none",
+            scrollTrigger: {
+                trigger: horizSection,
+                start: "top top",
+                end: algoScrollDist,
+                pin: true,
+                scrub: 1, // Smooth scrubbing
+                invalidateOnRefresh: true // Recalculates on resize
+            }
+        });
+
+        // --- NEW: Parallax background for The Algorithm ---
+        gsap.to("#algo-bg", {
+            x: "-30vw", // Moves slower than the foreground panels
+            ease: "none",
+            scrollTrigger: {
+                trigger: horizSection,
+                start: "top top",
+                end: algoScrollDist,
+                scrub: 1
+            }
+        });
+
+
+        // --- NEW: Floating feed cards ---
+        gsap.utils.toArray('.feed-card').forEach((card, i) => {
+            gsap.to(card, {
+                y: (i % 2 === 0) ? 60 : -60, // Alternate moving up and down
+                rotation: (i % 2 === 0) ? 3 : -3, // Slight drift rotation
+                ease: "none",
+                scrollTrigger: {
+                    trigger: horizSection,
+                    start: "top top",
+                    end: algoScrollDist,
+                    scrub: 1
+                }
+            });
+        });
+
+        // --- SVG Path Drawing Logic (excluding red underline) ---
+        document.querySelectorAll('.svg-hand-drawn:not(#red-underline)').forEach(path => {
+            const length = path.getTotalLength();
+            path.style.strokeDasharray = length;
+            path.style.strokeDashoffset = length;
+            gsap.to(path, {
+                strokeDashoffset: 0,
+                ease: "power2.inOut",
+                scrollTrigger: {
+                    trigger: path.closest('.reveal-text') || "#human-margin-wrapper",
+                    start: "top 75%",
+                    end: "bottom 40%",
+                    scrub: 1.5
+                }
+            });
+        });
+
+        // --- Red underline: pin the block, draw the line, then release ---
+        const redLine = document.getElementById('red-underline');
+        const redLength = redLine.getTotalLength();
+        redLine.style.strokeDasharray = redLength;
+        redLine.style.strokeDashoffset = redLength;
+
+        // Fade in Second Promise section
+        gsap.to("#scroll-break-section", {
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: "#scroll-break-section",
+                start: "top 85%",
+                toggleActions: "play none none reverse"
+            }
+        });
+
+        // --- Breaking Scroll Object: pin, pause, then break apart ---
+        const breakTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#scroll-break-section",
+                start: "top top",
+                end: "+=600",
+                pin: true,
+                pinSpacing: true,
+                anticipatePin: 1,
+                scrub: 0.5,
+                refreshPriority: 2,
+            }
+        });
+        // First 60%: hold still (pause for reading)
+        breakTL.to({}, { duration: 0.6 });
+        // Last 40%: pieces fly apart quickly
+        breakTL.to("#object-left", {
+            x: -200,
+            y: 80,
+            rotation: -25,
+            opacity: 0,
+            duration: 0.4,
+        }, 0.6);
+        breakTL.to("#object-right", {
+            x: 200,
+            y: 100,
+            rotation: 20,
+            opacity: 0,
+            duration: 0.4,
+        }, 0.6);
+
+        // Fade in the block with NO translateY so pin position is accurate
+        gsap.to("#no-longer-exist-block", {
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: "#no-longer-exist-block",
+                start: "top 85%",
+                toggleActions: "play none none reverse"
+            }
+        });
+
+        // Pin the full-screen block, draw the red line, then release
+        ScrollTrigger.create({
+            trigger: "#no-longer-exist-block",
+            start: "top top",
+            end: "+=350",
+            pin: true,
+            pinSpacing: true,
+            anticipatePin: 1,
+            refreshPriority: 1,
+        });
+
+        gsap.to(redLine, {
+            strokeDashoffset: 0,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#no-longer-exist-block",
+                start: "top top",
+                end: "+=350",
+                scrub: 0.3,
+            }
+        });
+
+        // --- Gold Glow: appears over algorithm section at very end of horizontal scroll ---
+        const goldTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: horizSection,
+                start: "top top",
+                end: algoScrollDist,
+                scrub: 1,
+            }
+        });
+        // 100%: nothing happens during horizontal scroll
+        goldTL.to({}, { duration: 1.0 });
+        // After horizontal scroll completes: Glow rises and scales
+        goldTL.to("#gold-glow-img", {
+            top: "60%",
+            ease: "none",
+            duration: 0.06,
+        });
+        goldTL.to("#gold-glow-img", {
+            scale: 5,
+            ease: "power1.in",
+            duration: 0.06,
+        });
+
+        // Refresh all triggers after setup to ensure correct positioning
+        ScrollTrigger.refresh();
+
+        // 3. The Human Margin: Sticky Text opacity toggle
+        // Make the sticky text fully visible when scrolling through the section
+        gsap.to("#main-quote", {
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#human-margin-wrapper",
+                start: "top 30%",
+                end: "bottom 80%",
+                toggleActions: "play reverse play reverse"
+            }
+        });
+
+        // 4. Background Color Transitions (The Dissolving System)
+        // Transition to Digital (Dark Blue)
+        ScrollTrigger.create({
+            trigger: "#trigger-digital",
+            start: "top center",
+            end: "bottom center",
+            onEnter: () => gsap.to("body", {backgroundColor: "#0f172a", color: "#f3f4f6", duration: 1}),
+            onLeaveBack: () => gsap.to("body", {backgroundColor: "#111827", color: "#f3f4f6", duration: 1})
+        });
+
+        // Transition to Human Margin (Warm Sand) — immediate, glow already provides the visual transition
+        ScrollTrigger.create({
+            trigger: "#human-margin-wrapper",
+            start: "top bottom",
+            onEnter: () => gsap.set("body", {backgroundColor: "#faedcd", color: "#2c1e16"}),
+            onLeaveBack: () => gsap.set("body", {backgroundColor: "#0f172a", color: "#f3f4f6"})
+        });
+
+        // Transition to Finish Line (White/Horizon) happens via CSS linear-gradient overlay
+        // but we ensure body background matches the bottom
+        ScrollTrigger.create({
+            trigger: "#trigger-horizon",
+            start: "top 70%",
+            onEnter: () => gsap.to("body", {backgroundColor: "#f8fafc", color: "#1e293b", duration: 1.5}),
+            onLeaveBack: () => gsap.to("body", {backgroundColor: "#faedcd", color: "#2c1e16", duration: 1.5})
+        });
+
+        // --- Hero Typewriter Effect ---
+        (function() {
+            const text = "Nobody told you the deal had changed.";
+            const el = document.getElementById('hero-typewriter');
+            let i = 0;
+            const cursor = document.createElement('span');
+            cursor.className = 'typewriter-cursor';
+            cursor.textContent = '|';
+            el.appendChild(cursor);
+
+            function type() {
+                if (i < text.length) {
+                    el.insertBefore(document.createTextNode(text[i]), cursor);
+                    i++;
+                    setTimeout(type, 65);
+                }
+            }
+            setTimeout(type, 800);
+        })();
+
+    </script>
+</body>
+</html>
